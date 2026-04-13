@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="60">
+    <title>Morning Muses | Research Simplified</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="top-nav">
+        <button onclick="enableNotifications()" id="notif-btn" class="icon-btn" title="Enable Desktop Notifications">
+            Notification
+        </button>
+        <div class="nav-logo">Morning Muses</div>
+    </nav>
+
+    <img src="aesthetic vsco hanging plant.png" alt="Decorative Plant" class="hanging-plant">
+
+    <div class="container">
+        <div class="corner-cat-container">
+            <img src="cat.png" alt="Companion Cat" class="corner-cat-img">
+            <div class="eye left-eye"><div class="pupil"></div></div>
+            <div class="eye right-eye"><div class="pupil"></div></div>
+        </div>
+        <header>
+            <div class="brand-pill">
+                <h1>Morning Muses <img src="cup.gif" alt="" class="head-cup"></h1>
+            </div>
+            <p>Complex research explained with simple analogies</p>
+        </header>
+
+        <section class="discovery-section">
+            <form action="{{ url_for('manual_fetch') }}" method="post" class="search-form" onsubmit="return startCircularExpansion(this)">
+                <div class="select-wrapper" id="customSelect">
+                    <div class="selected-display" id="selectedLabel">Artificial Intelligence</div>
+                    <div class="options-list" id="optionsList">
+                        <div class="option" data-value="cs.AI">Artificial Intelligence</div>
+                        <div class="option" data-value="cs.LG">Machine Learning</div>
+                        <div class="option" data-value="cs.CV">Computer Vision</div>
+                        <div class="option" data-value="cs.RO">Robotics</div>
+                        <div class="option" data-value="math">Mathematics</div>
+                        <div class="option" data-value="physics">Physics</div>
+                        <div class="option" data-value="astro-ph">Astrophysics</div>
+                        <div class="option" data-value="q-bio">Biology</div>
+                    </div>
+                    <input type="hidden" name="topic" id="topicInput" value="cs.AI">
+                </div>
+                <button type="submit" class="btn">Discover Now</button>
+            </form>
+        </section>
+
+        <div class="feed">
+            {% for paper in papers %}
+            <div class="card">
+                <h3>{{ paper.title }}</h3>
+                <p>{{ paper.summary }}</p>
+                <a href="{{ paper.link }}" target="_blank" class="link">Read Full Paper</a>
+            </div>
+            {% else %}
+            <div class="empty">
+                <p>No papers found yet. Click the button above to start.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="loader" class="full-page-loader">
+        <div class="loader-content">
+            <img src="witch.gif" alt="witch" class="loader-gif">
+            <p class="loader-subtext">AI is reading with cats</p>
+        </div>
+    </div>
+
+    <script>
+        function startCircularExpansion(form) {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'flex';
+            
+            void loader.offsetWidth;
+            
+            loader.classList.add('expanding');
+
+            setTimeout(() => {
+                form.submit();
+            }, 750);
+            
+            return false;
+        }
+
+        window.onload = function() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'none';
+            loader.classList.remove('expanding');
+
+        const selectWrapper = document.getElementById('customSelect');
+        const optionsList = document.getElementById('optionsList');
+        const selectedLabel = document.getElementById('selectedLabel');
+        const topicInput = document.getElementById('topicInput');
+
+        const pupils = document.querySelectorAll('.pupil');
+        document.addEventListener('mousemove', (e) => {
+            pupils.forEach(pupil => {
+                const rect = pupil.getBoundingClientRect();
+                const eyeX = rect.left + rect.width / 2;
+                const eyeY = rect.top + rect.height / 2;
+                
+                const angle = Math.atan2(e.clientY - eyeY, e.clientX - eyeX);
+                const distance = Math.min(12, Math.hypot(e.clientX - eyeX, e.clientY - eyeY) / 15);
+                
+                const moveX = Math.cos(angle) * distance;
+                const moveY = Math.sin(angle) * distance;
+                
+                pupil.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            });
+        });
+
+            selectWrapper.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectWrapper.classList.toggle('open');
+            });
+
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    const value = option.getAttribute('data-value');
+                    const text = option.innerText;
+                    
+                    topicInput.value = value;
+                    selectedLabel.innerText = text;
+                    
+                    selectWrapper.classList.remove('open');
+                    
+                    document.querySelectorAll('.option').forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                });
+            });
+
+            document.addEventListener('click', () => {
+                selectWrapper.classList.remove('open');
+            });
+
+            // Fire notification on load if permission is granted
+            if (Notification.permission === "granted") {
+                const title = {{ notification_title | tojson }};
+                const body = {{ notification_body | tojson }};
+                const paperId = "{{ latest_id }}";
+                
+                // Only notify if this is a new ID
+                if (paperId && paperId !== "0" && localStorage.getItem('lastNotifiedId') !== paperId) {
+                    new Notification(title, { body: body });
+                    localStorage.setItem('lastNotifiedId', paperId);
+                }
+            }
+        }
+
+        function enableNotifications() {
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notifications");
+            } else if (Notification.permission === "granted") {
+                new Notification("Morning Muses", { body: "Notifications are already enabled!" });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("Morning Muses", { body: "Desktop notifications enabled!" });
+                        document.getElementById('notif-btn').innerText = "Enabled";
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
