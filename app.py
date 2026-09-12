@@ -13,6 +13,8 @@ model_name = "HuggingFaceTB/SmolLM2-135M-Instruct"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name)
 
+#maahi kadam
+
 def get_db_connection():
     connection = sqlite3.connect('project.db')
     connection.row_factory = sqlite3.Row
