@@ -12,7 +12,7 @@ app = Flask(__name__, template_folder='.', static_folder='.', static_url_path=''
 model_name = "HuggingFaceTB/SmolLM2-135M-Instruct"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name)
-
+#it was not done bro
 
 #hey is it working
 
