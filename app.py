@@ -13,10 +13,6 @@ model_name = "HuggingFaceTB/SmolLM2-135M-Instruct"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name)
 
-#maahi kadam
-# IS THIS CODE EVEN RUNNING???
-
-#will this thing even work now?
 
 #hey is it working
 
