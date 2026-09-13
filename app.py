@@ -14,7 +14,10 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name)
 
 #maahi kadam
+# IS THIS CODE EVEN RUNNING???
 
+
+#is this working now
 def get_db_connection():
     connection = sqlite3.connect('project.db')
     connection.row_factory = sqlite3.Row
