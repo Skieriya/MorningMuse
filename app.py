@@ -21,7 +21,6 @@ model = AutoModelForCausalLM.from_pretrained(model_name)
 #check this now
 
 #what is happening?
-def get_db_connection():
     connection = sqlite3.connect('project.db')
     connection.row_factory = sqlite3.Row
     return connection
