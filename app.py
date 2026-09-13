@@ -17,6 +17,8 @@ model = AutoModelForCausalLM.from_pretrained(model_name)
 # IS THIS CODE EVEN RUNNING???
 
 #will this thing even work now?
+
+#it worked really?
 def get_db_connection():
     connection = sqlite3.connect('project.db')
     connection.row_factory = sqlite3.Row
